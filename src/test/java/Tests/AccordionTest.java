@@ -1,10 +1,11 @@
-package TestPackage;
+package Tests;
 
-import PageObject.MainPage;
+import Object.MainPage;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import static PageObject.MainPage.*;
+
+import static Object.MainPage.*;
 
 @RunWith(Parameterized.class)
 public class AccordionTest extends BaseUITest {

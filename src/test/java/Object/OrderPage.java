@@ -1,17 +1,13 @@
-package PageObject;
+package Object;
 
 import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
 import java.time.Duration;
 
-import static PageObject.MainPage.MAIN_PAGE_URL;
-
-public class OrderPage {
-    protected WebDriver driver;
-
-    public static String ORDER_PAGE_URL = MAIN_PAGE_URL + "order";
+public class OrderPage extends BasePage {
 
     private final By nameInput = By.xpath(".//input[contains(@placeholder, 'Имя')]");
     private final By surnameInput = By.xpath(".//input[contains(@placeholder, 'Фамилия')]");
@@ -34,14 +30,55 @@ public class OrderPage {
     private final By orderMiddleButton = By.xpath(".//div[contains(@class, 'Order_Buttons')]/button[text()='Заказать']");
     private final By orderYesButton = By.xpath(".//div[contains(@class, 'Order_Buttons')]/button[text()='Да']");
 
-    public final By order_modal_header = By.xpath(".//div[contains(@class, 'Order_ModalHeader') and contains(text(), 'Заказ оформлен')]");
+    public final By orderModalHeader = By.xpath(".//div[contains(@class, 'Order_ModalHeader') and contains(text(), 'Заказ оформлен')]");
+
+    private final By ErrorInput = By.xpath(".//input[contains(@class, 'Input_Error')]");
+
+    private static final String INPUT_ERROR_MESSAGE = ".//div[contains(@class, 'Input_ErrorMessage') and contains(text(), '%s')]";
+    public static final String NAME_ERROR_MESSAGE = "Введите корректное имя";
+    public static final String SURNAME_ERROR_MESSAGE = "Введите корректную фамилию";
+    public static final String ADDRESS_ERROR_MESSAGE = "Введите корректный адрес";
+    public static final String PHONE_NUMBER_ERROR_MESSAGE = "Введите корректный номер";
+
+    public static final String METRO_STATION_NAME_ERROR_MESSAGE = ".//div[contains(@class, 'Order_MetroError') and contains(text(), 'Выберите станцию')]";
 
     public OrderPage(WebDriver driver) {
         this.driver = driver;
     }
 
-    public void openOrderPage() {
-        driver.get(ORDER_PAGE_URL);
+    public void assertEqualsErrorMessage(String errorMassage) {
+
+        String errorMessageText = String.format(INPUT_ERROR_MESSAGE, errorMassage);
+        new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath(errorMessageText)));
+        WebElement ErrorElementText = driver.findElement(By.xpath(errorMessageText));
+
+        new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.visibilityOfElementLocated(ErrorInput));
+        Assert.assertEquals(ErrorElementText.getText(), errorMassage);
+
+    }
+
+    public void assertEqualsErrorMessageMetro(String errorMassageMetro) {
+
+        String errorMessageText = String.format(METRO_STATION_NAME_ERROR_MESSAGE, errorMassageMetro);
+        new WebDriverWait(driver, Duration.ofSeconds(7))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath(errorMessageText)));
+        WebElement ErrorElementText = driver.findElement(By.xpath(errorMessageText));
+
+        new WebDriverWait(driver, Duration.ofSeconds(7))
+                .until(ExpectedConditions.visibilityOfElementLocated(ErrorInput));
+        Assert.assertEquals(ErrorElementText.getText(), errorMassageMetro);
+    }
+
+    public void setOrderMetro(String metroStationName) {
+        new WebDriverWait(driver, Duration.ofSeconds(5))
+                .until(ExpectedConditions.visibilityOfElementLocated(metroStationNameInput));
+        WebElement orderNumberWebElement = driver.findElement(metroStationNameInput);
+        orderNumberWebElement.clear();
+        driver.findElement(metroStationNameInput).sendKeys(metroStationName);
+        new WebDriverWait(driver, Duration.ofSeconds(5))
+                .until(ExpectedConditions.elementToBeClickable(metroStationNameInput));
     }
 
     public void setOrderName(String name) {
@@ -146,8 +183,8 @@ public class OrderPage {
     public void checkOrderModalHeader(String expectedText) {
 
         new WebDriverWait(driver, Duration.ofSeconds(7))
-                .until(ExpectedConditions.visibilityOfElementLocated(order_modal_header));
-        WebElement orderSuccesText = driver.findElement(order_modal_header);
+                .until(ExpectedConditions.visibilityOfElementLocated(orderModalHeader));
+        WebElement orderSuccesText = driver.findElement(orderModalHeader);
 
         Assert.assertEquals(orderSuccesText.getText().substring(0, 14), expectedText);
     }

@@ -1,12 +1,14 @@
-package TestPackage;
+package Tests;
 
-import PageObject.MainPage;
-import PageObject.OrderPage;
+import Object.MainPage;
+import Object.OrderPage;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+
 import java.time.LocalDate;
-import static PageObject.MainPage.*;
+
+import static Object.MainPage.HOW_MUCH_COSTS_QUESTION;
 
 @RunWith(Parameterized.class)
 public class OrderScooterTest extends BaseUITest {
@@ -72,6 +74,7 @@ public class OrderScooterTest extends BaseUITest {
         mainPage.openMainPage();
         mainPage.appCookieButtonClick();
         mainPage.orderButtonHeaderClick();
+        mainPage.assertEqualsOrderPageURL();
     }
 
     @Test
@@ -80,5 +83,6 @@ public class OrderScooterTest extends BaseUITest {
         mainPage.openMainPage();
         mainPage.appCookieButtonClick();
         mainPage.orderButtonDownClick(HOW_MUCH_COSTS_QUESTION);
+        mainPage.assertEqualsOrderPageURL();
     }
 }

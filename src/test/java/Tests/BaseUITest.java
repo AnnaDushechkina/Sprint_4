@@ -1,4 +1,4 @@
-package TestPackage;
+package Tests;
 
 import org.junit.After;
 import org.junit.Before;
@@ -7,6 +7,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+
 import java.time.Duration;
 
 public class BaseUITest {
@@ -24,12 +25,12 @@ public class BaseUITest {
         driver.quit();
     }
 
-    public void initChrome() {
+    private void initChrome() {
         ChromeOptions options = new ChromeOptions();
         driver = new ChromeDriver(options);
     }
 
-    public void initFirefox() {
+    private void initFirefox() {
         FirefoxOptions options = new FirefoxOptions();
         driver = new FirefoxDriver(options);
     }

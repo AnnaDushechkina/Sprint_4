@@ -1,8 +1,7 @@
-package PageObject;
+package Object;
 
 import org.junit.Assert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -10,13 +9,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
-import static PageObject.OrderPage.ORDER_PAGE_URL;
-
-public class MainPage {
-
-    protected WebDriver driver;
-
-    public static final String MAIN_PAGE_URL = "https://qa-scooter.praktikum-services.ru/";
+public class MainPage extends BasePage {
 
     private static final String FAQ_QUESTION_PATTERN = ".//div[contains(@id, 'accordion__heading') and contains(text(), '%s')]";
     private static final String FAQ_QUESTION_TEXT = ".//div[contains(@id, 'accordion__panel')]/p[contains(text(), '%s')]";
@@ -41,13 +34,14 @@ public class MainPage {
     private final By orderHeaderButton = By.xpath(".//div[contains(@class, 'Header_Nav')]/button[text()='Заказать']");
     private final By orderDownButton = By.xpath(".//div[contains(@class, 'Home_FinishButton')]/button[text()='Заказать']");
     private final By appCookieButton = By.xpath(".//button[@id='rcc-confirm-button']");
+    private final By imgLogoScooter = By.xpath(".//img[@alt='Scooter']");
+    private final By imgLogoYandex = By.xpath(".//img[@alt='Yandex']");
+    private final By statusOrderButton = By.xpath(".//button[contains(@class, 'Header_Link')]");
+    private final By orderNumberInput = By.xpath(".//input[@type = 'text']");
+    private final By goButton = By.xpath(".//button[contains(@class, 'Header_Button') and text()='Go!']");
 
     public MainPage(WebDriver driver) {
         this.driver = driver;
-    }
-
-    public void openMainPage() {
-        driver.get(MAIN_PAGE_URL);
     }
 
     public void appCookieButtonClick() {
@@ -56,11 +50,42 @@ public class MainPage {
         driver.findElement(appCookieButton).click();
     }
 
+    public void orderLogoScooterClick() {
+        new WebDriverWait(driver, Duration.ofSeconds(5))
+                .until(ExpectedConditions.elementToBeClickable(imgLogoYandex));
+        driver.findElement(imgLogoYandex).click();
+    }
+
+    public void orderLogoYandexClick() {
+        new WebDriverWait(driver, Duration.ofSeconds(5))
+                .until(ExpectedConditions.elementToBeClickable(imgLogoScooter));
+        driver.findElement(imgLogoScooter).click();
+    }
+
+    public void statusOrderButtonClick() {
+        new WebDriverWait(driver, Duration.ofSeconds(5))
+                .until(ExpectedConditions.elementToBeClickable(statusOrderButton));
+        driver.findElement(statusOrderButton).click();
+    }
+
+    public void setOrderNumber(String orderNumberValue) {
+        new WebDriverWait(driver, Duration.ofSeconds(5))
+                .until(ExpectedConditions.visibilityOfElementLocated(orderNumberInput));
+        WebElement orderNumberWebElement = driver.findElement(orderNumberInput);
+        orderNumberWebElement.clear();
+        driver.findElement(orderNumberInput).sendKeys(orderNumberValue);
+    }
+
+    public void goButtonClick() {
+        new WebDriverWait(driver, Duration.ofSeconds(5))
+                .until(ExpectedConditions.elementToBeClickable(goButton));
+        driver.findElement(goButton).click();
+    }
+
     public void orderButtonHeaderClick() {
         new WebDriverWait(driver, Duration.ofSeconds(5))
                 .until(ExpectedConditions.elementToBeClickable(orderHeaderButton));
         driver.findElement(orderHeaderButton).click();
-        Assert.assertEquals(driver.getCurrentUrl(), ORDER_PAGE_URL);
     }
 
     public void orderButtonDownClick(String questionMessage) {
@@ -69,10 +94,7 @@ public class MainPage {
         scrollToElement(questionElement);
         new WebDriverWait(driver, Duration.ofSeconds(5))
                 .until(ExpectedConditions.visibilityOfElementLocated(By.xpath(questionLocator)));
-
         driver.findElement(orderDownButton).click();
-
-        Assert.assertEquals(driver.getCurrentUrl(), ORDER_PAGE_URL);
     }
 
     public void clickFAQQuestion(String questionMessage, String questionText) {
@@ -82,7 +104,6 @@ public class MainPage {
         scrollToElement(questionElement);
         new WebDriverWait(driver, Duration.ofSeconds(5))
                 .until(ExpectedConditions.elementToBeClickable(By.xpath(questionLocator)));
-
         questionElement.click();
 
         String questionLocatorText = String.format(FAQ_QUESTION_TEXT, questionText);
@@ -91,9 +112,5 @@ public class MainPage {
         WebElement questionElementText = driver.findElement(By.xpath(questionLocatorText));
 
         Assert.assertEquals(questionElementText.getText().toString(), questionText);
-    }
-
-    private void scrollToElement(WebElement element) {
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", element);
     }
 }
